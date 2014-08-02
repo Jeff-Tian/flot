@@ -23,7 +23,7 @@ can just fix the size of their placeholders.
             if (placeholder.width() === 0 || placeholder.height() === 0) {
                 return;
             }
-
+            
             plot.resize();
             plot.setupGrid();
             plot.draw();

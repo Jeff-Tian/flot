@@ -251,7 +251,7 @@ can set the default in the options.
                 opts.min = min;
                 opts.max = max;
             });
-
+            
             plot.setupGrid();
             plot.draw();
 
