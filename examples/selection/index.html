@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -7,11 +7,20 @@
 	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../../lib/excanvas.min.js"></script><![endif]-->
 	<script language="javascript" type="text/javascript" src="../../lib/jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="../../lib/jquery.colorhelpers.js"></script>
-	<script language="javascript" type="text/javascript" src="../../jquery.flot.js"></script>
-	<script language="javascript" type="text/javascript" src="../../jquery.flot.selection.js"></script>
+	<script language="javascript" type="text/javascript" src="../../src/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="../../src/plugins/jquery.flot.selection.js"></script>
 	<script type="text/javascript">
 
 	$(function() {
+
+		// Shim allowing us to get the state of the check-box on jQuery versions
+		// prior to 1.6, when prop was added.  The reason we don't just use attr
+		// is because it doesn't work in jQuery versions 1.9.x and later.
+
+		// TODO: Remove this once Flot's minimum supported jQuery reaches 1.6.
+		if (typeof $.fn.prop != 'function') {
+		    $.fn.prop = $.fn.attr;
+		}
 
 		var data = [{
 			label: "United States",
@@ -65,15 +74,17 @@
 
 			$("#selection").text(ranges.xaxis.from.toFixed(1) + " to " + ranges.xaxis.to.toFixed(1));
 
-			var zoom = $("#zoom").attr("checked");
+			var zoom = $("#zoom").prop("checked");
 
 			if (zoom) {
-				plot = $.plot(placeholder, data, $.extend(true, {}, options, {
-					xaxis: {
-						min: ranges.xaxis.from,
-						max: ranges.xaxis.to
-					}
-				}));
+				$.each(plot.getXAxes(), function(_, axis) {
+					var opts = axis.options;
+					opts.min = ranges.xaxis.from;
+					opts.max = ranges.xaxis.to;
+				});
+				plot.setupGrid();
+				plot.draw();
+				plot.clearSelection();
 			}
 		});
 
@@ -135,7 +146,7 @@
 	</div>
 
 	<div id="footer">
-		Copyright &copy; 2007 - 2013 IOLA and Ole Laursen
+		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen
 	</div>
 
 </body>
